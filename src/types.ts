@@ -1,7 +1,10 @@
-// MAIN: ONNX-converted version of kotoba-whisper (v2.2 = latest with ONNX support).
-// transformers.js requires ONNX weights. kotoba-tech/kotoba-whisper-v2.0 has only safetensors
-// and cannot load in-browser. Use the onnx-community conversion instead.
-export const MAIN_MODEL = "onnx-community/kotoba-whisper-v2.2-ONNX" as const;
+// MAIN: whisper-large-v3-turbo is OpenAI's latest production-grade Whisper.
+// 4-layer decoder, ~800MB with q8, excellent Japanese accuracy, and (critically)
+// uses the standard Whisper pipeline — no custom_pipelines field, so it loads
+// cleanly via transformers.js. Most-downloaded transformers.js ASR model.
+// (kotoba-whisper-v2.2-ONNX has a custom_pipelines field that transformers.js
+// cannot resolve, throwing "Unsupported model type: whisper".)
+export const MAIN_MODEL = "onnx-community/whisper-large-v3-turbo" as const;
 export const FALLBACK_MODEL = "Xenova/whisper-small" as const;
 
 export type ModelId = typeof MAIN_MODEL | typeof FALLBACK_MODEL;

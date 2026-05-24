@@ -6,7 +6,7 @@ Vite + TypeScript + TailwindCSS で実装した、ブラウザ完結型の音声
 
 ## 既知の懸念点
 
-- 初回利用時はモデルファイルのダウンロードが大きく、`onnx-community/kotoba-whisper-v2.2-ONNX` は数百MB規模の通信が発生します。
+- 初回利用時はモデルファイルのダウンロードが大きく、`onnx-community/whisper-large-v3-turbo` は約800MB規模の通信が発生します。
 - WAV は30秒単位でファイルを読み込み、推論後に破棄します。MP3/M4A/WebM/OGG/FLAC の長時間音声はブラウザの再生デコーダーから30秒ずつ取り出すため、全PCM保持は避けられますが、デコードがほぼ実時間で進みます。長時間・大容量ファイルは 16bit PCM WAV が最も高速で安定します。
 - iPhone Safari はメモリ上限が低く、数百MB以上の音声ではPCより失敗しやすいです。録音や音声処理はユーザー操作後に開始する実装にしています。
 - 実機のマイク録音、iOS Safari、1GB近いファイル処理は端末依存が強いため、利用予定端末で追加検証してください。
@@ -20,7 +20,7 @@ Vite + TypeScript + TailwindCSS で実装した、ブラウザ完結型の音声
 - 音声ファイルのドラッグ&ドロップ / クリック選択
 - マイク録音と録音後の自動文字起こし
 - 日本語 / 英語 / 自動判定の言語選択
-- kotoba-whisper-v2.2 ONNX / whisper-small のモデル切替
+- whisper-large-v3-turbo / whisper-small のモデル切替
 - モデルDL進捗、文字起こし進捗、経過時間 / 推定残り時間表示
 - 変換中止、途中結果の逐次表示
 - コピー、`.txt`、`.srt` エクスポート
@@ -59,8 +59,8 @@ GitHub リポジトリ側では Pages の Source を GitHub Actions に設定し
 
 ## 使用モデルとサイズ
 
-- メイン: `onnx-community/kotoba-whisper-v2.2-ONNX`（transformers.jsでブラウザ実行可能なONNX版。日本語に強い）
-- フォールバック: `Xenova/whisper-small`（多言語対応）
+- メイン: `onnx-community/whisper-large-v3-turbo`（OpenAI Whisper の高精度多言語モデル、日本語含む。transformers.js コミュニティで最も実績あり）
+- フォールバック: `Xenova/whisper-small`（軽量・高速、簡易用途向け）
 
 モデルは `@huggingface/transformers` 経由で Hugging Face から取得します。初回のみ大きなダウンロードが発生し、以後はブラウザキャッシュと Service Worker キャッシュが利用されます。
 

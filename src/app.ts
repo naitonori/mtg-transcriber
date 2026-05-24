@@ -116,7 +116,7 @@ export const createApp = () => {
   const firstRunText = el(
     "p",
     "mt-1 text-sm leading-6",
-    "kotoba-whisper-v2.0 は初回のみ約700MB規模のダウンロードが発生します。Wi-Fi環境での利用を推奨します。音声や文字起こし結果は送信されません。"
+    "whisper-large-v3-turbo は初回のみ約800MB規模のダウンロードが発生します。Wi-Fi環境での利用を推奨します。音声や文字起こし結果は送信されません。"
   );
   const acceptNoticeButton = button("確認しました", "primary");
   acceptNoticeButton.classList.add("mt-3");
@@ -162,8 +162,8 @@ export const createApp = () => {
   const settingsGrid = el("div", "grid gap-4");
   const modelWrap = el("div", "space-y-2");
   const modelSelect = select<ModelId>([
-    { value: MAIN_MODEL, label: "kotoba-whisper-v2.2 ONNX（日本語メイン）" },
-    { value: FALLBACK_MODEL, label: "whisper-small（多言語フォールバック）" }
+    { value: MAIN_MODEL, label: "whisper-large-v3-turbo（高精度・多言語）" },
+    { value: FALLBACK_MODEL, label: "whisper-small（軽量・高速）" }
   ]);
   modelSelect.value = settings.model;
   modelWrap.append(fieldLabel("モデル"), modelSelect);
