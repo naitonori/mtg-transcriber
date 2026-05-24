@@ -42,6 +42,43 @@ envConfig.allowRemoteModels = true;
 envConfig.useBrowserCache = true;
 envConfig.remoteHost = "https://huggingface.co";
 
+// Configure the ONNX Runtime WASM backend so it does NOT try to import a
+// worker proxy module from a jsdelivr CDN at runtime. With our strict CSP
+// (`script-src 'self' 'wasm-unsafe-eval'`), that dynamic import is blocked
+// and ORT reports "no available backend found. ERR: [wasm] Importing a
+// module script failed". Running the WASM session inline on the main
+// thread with a single thread of execution removes the need for any
+// external worker JS, while still letting ORT pick up the Vite-bundled
+// `ort-wasm-simd-threaded.jsep-*.wasm` from the same origin.
+type OnnxBackendConfig = {
+  backends?: {
+    onnx?: {
+      wasm?: {
+        numThreads?: number;
+        proxy?: boolean;
+        simd?: boolean;
+      };
+    };
+  };
+};
+const ortEnv = env as unknown as OnnxBackendConfig;
+if (!ortEnv.backends) {
+  ortEnv.backends = {};
+}
+if (!ortEnv.backends.onnx) {
+  ortEnv.backends.onnx = {};
+}
+if (!ortEnv.backends.onnx.wasm) {
+  ortEnv.backends.onnx.wasm = {};
+}
+ortEnv.backends.onnx.wasm.numThreads = 1;
+ortEnv.backends.onnx.wasm.proxy = false;
+ortEnv.backends.onnx.wasm.simd = true;
+// Serve onnxruntime-web's .mjs loader + .wasm binary from our own origin
+// (public/ort/ → /mtg-transcriber/ort/). Vite-only bundling skips the .mjs
+// loader, leaving the runtime to try a jsdelivr CDN that our CSP blocks.
+(ortEnv.backends.onnx.wasm as { wasmPaths?: string }).wasmPaths = "/mtg-transcriber/ort/";
+
 const languageToWhisper = (language: LanguageChoice) => {
   if (language === "ja") {
     return "japanese";
