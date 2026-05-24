@@ -44,7 +44,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,wasm}"],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/(huggingface\.co|cdn-lfs\.huggingface\.co)\//,
+            urlPattern: /^https:\/\/(huggingface\.co|cdn-lfs\.huggingface\.co|[a-z0-9-]+\.xethub\.hf\.co)\//,
             handler: "CacheFirst",
             options: {
               cacheName: "hf-model-cache",

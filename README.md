@@ -75,7 +75,7 @@ GitHub リポジトリ側では Pages の Source を GitHub Actions に設定し
 ## Privacy & Security
 
 - 音声データと文字起こし本文は外部送信しません。
-- 外部通信はモデルDLのための Hugging Face (`https://huggingface.co`, `https://cdn-lfs.huggingface.co`) のみに限定しています。
+- 外部通信はモデルDLのための Hugging Face (`https://huggingface.co`, `https://cdn-lfs.huggingface.co`, `https://*.xethub.hf.co`) のみに限定しています。`xethub.hf.co` は HuggingFace の新しい LFS CDN で、Whisper モデルファイル本体の配信に使われます。
 - `index.html` に CSP メタタグを設定し、`connect-src` を Hugging Face のみに制限しています。
 - 音声・文字起こし本文は `localStorage` / `IndexedDB` に保存しません。保存するのはモデル選択、言語、タイムスタンプ表示、初回警告確認などの設定値のみです。
 - 文字起こし結果は DOM のテキストとして扱い、HTMLとして差し込みません。
