@@ -1,0 +1,24 @@
+{
+  "name": "mtg-transcriber",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-only meeting audio transcriber for GitHub Pages.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "audit:production": "npm audit --production"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.7.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-pwa": "^1.2.0"
+  }
+}
