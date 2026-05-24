@@ -20,13 +20,21 @@ const defaultSettings: AppSettings = {
   acceptedFirstRunNotice: false
 };
 
+const VALID_MODELS: ReadonlyArray<string> = [MAIN_MODEL, FALLBACK_MODEL];
+
 const loadSettings = (): AppSettings => {
   const raw = localStorage.getItem(SETTINGS_KEY);
   if (!raw) {
     return defaultSettings;
   }
   try {
-    return { ...defaultSettings, ...JSON.parse(raw) };
+    const merged: AppSettings = { ...defaultSettings, ...JSON.parse(raw) };
+    // Migrate away from any obsolete model ids (e.g., the pre-fix
+    // kotoba-tech/kotoba-whisper-v2.0 which has no ONNX weights).
+    if (!VALID_MODELS.includes(merged.model)) {
+      merged.model = MAIN_MODEL;
+    }
+    return merged;
   } catch {
     return defaultSettings;
   }
@@ -154,8 +162,8 @@ export const createApp = () => {
   const settingsGrid = el("div", "grid gap-4");
   const modelWrap = el("div", "space-y-2");
   const modelSelect = select<ModelId>([
-    { value: MAIN_MODEL, label: "kotoba-whisper-v2.0（日本語メイン）" },
-    { value: FALLBACK_MODEL, label: "whisper-small（フォールバック）" }
+    { value: MAIN_MODEL, label: "kotoba-whisper-v2.2 ONNX（日本語メイン）" },
+    { value: FALLBACK_MODEL, label: "whisper-small（多言語フォールバック）" }
   ]);
   modelSelect.value = settings.model;
   modelWrap.append(fieldLabel("モデル"), modelSelect);
@@ -285,10 +293,13 @@ export const createApp = () => {
     setResult(nextText, [...resultSegments, ...segments]);
   };
 
+  const PROGRESS_TEXT_DEFAULT_CLASS = "mt-2 text-sm text-slate-700 dark:text-zinc-300";
+
   const resetProgress = () => {
     progressBar.style.width = "0%";
     modelProgressText.textContent = "モデルDL進捗: 待機中";
     transcribeProgressText.textContent = "文字起こし進捗: 待機中";
+    transcribeProgressText.className = PROGRESS_TEXT_DEFAULT_CLASS;
   };
 
   const transcribeCurrentFile = async () => {
@@ -355,7 +366,14 @@ export const createApp = () => {
     } catch (error) {
       const aborted = error instanceof DOMException && error.name === "AbortError";
       const message = aborted ? "変換を中止しました。" : error instanceof Error ? error.message : "変換中にエラーが発生しました。";
-      transcribeProgressText.textContent = message;
+      transcribeProgressText.textContent = `❌ ${message}`;
+      transcribeProgressText.className = "rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm font-semibold leading-6 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-100";
+      if (!aborted) {
+        // Surface unexpected errors to the console for diagnostics. Browsers
+        // do not silence transformers.js failures, but the in-page text alone
+        // can be easy to miss when busy state hides the start button.
+        console.error("[MTG文字起こし] 変換失敗:", error);
+      }
     } finally {
       await wakeLock.release();
       abortController = null;

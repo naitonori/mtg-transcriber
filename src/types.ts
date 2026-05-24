@@ -1,4 +1,7 @@
-export const MAIN_MODEL = "kotoba-tech/kotoba-whisper-v2.0" as const;
+// MAIN: ONNX-converted version of kotoba-whisper (v2.2 = latest with ONNX support).
+// transformers.js requires ONNX weights. kotoba-tech/kotoba-whisper-v2.0 has only safetensors
+// and cannot load in-browser. Use the onnx-community conversion instead.
+export const MAIN_MODEL = "onnx-community/kotoba-whisper-v2.2-ONNX" as const;
 export const FALLBACK_MODEL = "Xenova/whisper-small" as const;
 
 export type ModelId = typeof MAIN_MODEL | typeof FALLBACK_MODEL;
